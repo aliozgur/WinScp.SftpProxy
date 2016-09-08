@@ -1,0 +1,20 @@
+﻿{
+  "Options": {
+    "Protocol": "Sftp",
+    "SshHostKeyFingerprint": "hostkeyfingerprint",
+    "HostName": "xxx.yyy.zzz.mmm",
+    "UserName": "username",
+    "Password": "password"
+  },
+  "IntervalInSeconds": "10",
+  "Paths": [
+    {
+      "RemoteFolder": "/Input/",
+      "LocalFolder": "C:\\UELD\\Input",
+      "LocalMask": "*.csv",
+      "DeleteSourceFiles": true,
+      "BackupSourceFilesFolder": "Outbox",
+      "BackupSourceFiles": true
+    }
+  ]
+}

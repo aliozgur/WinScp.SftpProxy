@@ -1,0 +1,1 @@
+Bilgi.Sis.SftpProxy uninstall --sudo

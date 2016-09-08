@@ -1,0 +1,32 @@
+﻿{
+  "Options": {
+    "Protocol": "Sftp",
+    "SshHostKeyFingerprint": "hostkeyfingerprint",
+    "HostName": "xxx.yyy.zzz.mmm",
+    "UserName": "username",
+    "Password": "password"
+  },
+  "IntervalInSeconds": "10",
+  "Paths": [
+    {
+      "RemoteFolder": "/Output/",
+      "RemoteMask": "SISInput_UED-*.csv",
+      "LocalFolder": "C:\\UELD\\Output",
+      "LocalMask": "",
+      "MoveRemoteFiles": false,
+      "MoveRemoteFilesTo": "/Output/Processed/", 
+      "HistoryEnabled": true,
+      "DeleteSourceFiles": false
+    },
+    {
+      "RemoteFolder": "/Errors/",
+      "RemoteMask": "SISInput_UED-*.txt",
+      "LocalFolder": "C:\\UELD\\Errors",
+      "LocalMask": "",
+      "MoveRemoteFiles": false,
+      "MoveRemoteFilesTo": "/Errors/Processed/",
+      "HistoryEnabled": true,
+      "DeleteSourceFiles": false
+    }
+  ]
+}
