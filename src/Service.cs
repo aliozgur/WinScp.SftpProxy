@@ -32,7 +32,7 @@ namespace Bilgi.Sis.SftpProxy
             ConfigureUploads();
         }
 
-       
+
 
         private void ConfigureDownloads()
         {
@@ -134,8 +134,9 @@ namespace Bilgi.Sis.SftpProxy
                 return;
 
             IJobDetail job = JobBuilder.Create<DownloadJob>()
-            .UsingJobData("configFilePath", DownloadConfigFilePath)
-            .Build();
+                .WithIdentity("DownloadJob")
+                .UsingJobData("configFilePath", DownloadConfigFilePath)
+                .Build();
 
 
             ITrigger trigger = TriggerBuilder.Create()
@@ -154,8 +155,9 @@ namespace Bilgi.Sis.SftpProxy
                 return;
 
             IJobDetail job = JobBuilder.Create<UploadJob>()
-            .UsingJobData("configFilePath", UploadConfigFilePath)
-            .Build();
+                .WithIdentity("UploadJob")
+                .UsingJobData("configFilePath", UploadConfigFilePath)
+                .Build();
 
 
             ITrigger trigger = TriggerBuilder.Create()
