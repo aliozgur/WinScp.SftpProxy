@@ -18,9 +18,11 @@ namespace Bilgi.Sis.SftpProxy
         private IScheduler _scheduler = null;
         private FileTransferConfig _downloadConfig;
         private int _downloadInterval = 60 * 60; //  1 hour
+        private string _downloadCron;
 
         private FileTransferConfig _uploadConfig;
         private int _uploadInterval = 60 * 60; //  1 hour
+        private string _uploadCron;
 
         private string DownloadConfigFilePath => Path.Combine(Environment.CurrentDirectory, "configDownload.json");
         private string UploadConfigFilePath => Path.Combine(Environment.CurrentDirectory, "configUpload.json");
@@ -45,6 +47,9 @@ namespace Bilgi.Sis.SftpProxy
 
                 if (_downloadConfig.IntervalInSeconds > 0)
                     _downloadInterval = _downloadConfig.IntervalInSeconds;
+
+                if (!String.IsNullOrWhiteSpace(_downloadConfig.CronExp))
+                    _downloadCron = _downloadConfig.CronExp;
             }
             else
             {
@@ -64,6 +69,8 @@ namespace Bilgi.Sis.SftpProxy
 
                 if (_uploadConfig.IntervalInSeconds > 0)
                     _uploadInterval = _uploadConfig.IntervalInSeconds;
+                if (!String.IsNullOrWhiteSpace(_uploadConfig.CronExp))
+                    _uploadCron = _uploadConfig.CronExp;
             }
             else
             {
@@ -133,20 +140,39 @@ namespace Bilgi.Sis.SftpProxy
             if (_downloadConfig == null)
                 return;
 
+            var jobKey = new JobKey("DownloadJob", "DownloadsGroup");
             IJobDetail job = JobBuilder.Create<DownloadJob>()
-                .WithIdentity("DownloadJob")
+                .WithIdentity(jobKey)
                 .UsingJobData("configFilePath", DownloadConfigFilePath)
                 .Build();
 
+            ITrigger trigger = null;
+            bool explicitTriggerNow = false;
 
-            ITrigger trigger = TriggerBuilder.Create()
-                .StartNow()
-                .WithSimpleSchedule(x => x
-                    .WithIntervalInSeconds(_downloadInterval)
-                    .RepeatForever())
-                .Build();
+            if (!String.IsNullOrWhiteSpace(_downloadCron))
+            {
+
+                trigger = TriggerBuilder.Create()
+                    .WithSchedule(
+                        CronScheduleBuilder.CronSchedule(_downloadCron)
+                        .WithMisfireHandlingInstructionIgnoreMisfires()
+                    ).Build();
+                explicitTriggerNow = true;
+            }
+            else
+            {
+                trigger = TriggerBuilder.Create()
+                    .StartNow()
+                    .WithSimpleSchedule(x => x
+                        .WithIntervalInSeconds(_downloadInterval)
+                        .WithMisfireHandlingInstructionIgnoreMisfires()
+                        .RepeatForever())
+                    .Build();
+            }
 
             _scheduler.ScheduleJob(job, trigger);
+            if (explicitTriggerNow)
+                _scheduler.TriggerJob(jobKey);
         }
 
         private void PrepareUploadJob()
@@ -154,20 +180,39 @@ namespace Bilgi.Sis.SftpProxy
             if (_uploadConfig == null)
                 return;
 
+            var jobKey = new JobKey("UploadJob", "UploadsGroup");
             IJobDetail job = JobBuilder.Create<UploadJob>()
-                .WithIdentity("UploadJob")
+                .WithIdentity(jobKey)
                 .UsingJobData("configFilePath", UploadConfigFilePath)
                 .Build();
 
+            ITrigger trigger = null;
+            bool explicitTriggerNow = false;
 
-            ITrigger trigger = TriggerBuilder.Create()
-                .StartNow()
-                .WithSimpleSchedule(x => x
-                    .WithIntervalInSeconds(_uploadInterval)
-                    .RepeatForever())
-                .Build();
+            if (!String.IsNullOrWhiteSpace(_uploadCron))
+            {
+
+                trigger = TriggerBuilder.Create()
+                    .WithSchedule(
+                        CronScheduleBuilder.CronSchedule(_uploadCron)
+                            .WithMisfireHandlingInstructionIgnoreMisfires()
+                    ).Build();
+                explicitTriggerNow = true;
+            }
+            else
+            {
+                trigger = TriggerBuilder.Create()
+                    .StartNow()
+                    .WithSimpleSchedule(x => x
+                        .WithIntervalInSeconds(_uploadInterval)
+                        .WithMisfireHandlingInstructionIgnoreMisfires()
+                        .RepeatForever())
+                    .Build();
+            }
 
             _scheduler.ScheduleJob(job, trigger);
+            if (explicitTriggerNow)
+                _scheduler.TriggerJob(jobKey);
         }
     }
 }

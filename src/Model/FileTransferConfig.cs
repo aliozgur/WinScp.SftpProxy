@@ -13,6 +13,7 @@ namespace Bilgi.Sis.SftpProxy.Model
     {
         public SessionOptions Options { get; set; }
         public int IntervalInSeconds { get; set; } = 3600; // 1 hour default
+        public string CronExp { get; set; }
 
         public List<PathConfig> Paths { get; set; }
 

@@ -7,6 +7,7 @@
     "Password": "password"
   },
   "IntervalInSeconds": "10",
+  "CronExp": "0 0 6-23 ? * *", // every day every hour between 6:00-23:00
   "Paths": [
     {
       "RemoteFolder": "/Input/",
