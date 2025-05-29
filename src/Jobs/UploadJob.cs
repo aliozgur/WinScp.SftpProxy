@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Bilgi.Sis.SftpProxy.Model;
 using Common.Logging;
 using Quartz;
@@ -20,21 +21,22 @@ namespace Bilgi.Sis.SftpProxy.Jobs
         private readonly ILog _log = LogManager.GetLogger(typeof(UploadJob));
         private FileTransferConfig _config;
         private volatile int _isRunning;
-        public void Execute(IJobExecutionContext context)
+        public Task Execute(IJobExecutionContext context)
         {
             if (!LoadConfig(context))
-                return;
+                return Task.CompletedTask;
 
             if (Interlocked.Exchange(ref _isRunning, 1) == 1)
             {
                 _log.Info("[UPLOAD] SOMEONE ELSE IS IN! I'm just leaving the upload...");
-                return;
+                return Task.CompletedTask;
             }
 
             try
             {
 
                 DoExecute();
+                return Task.CompletedTask;
             }
             finally
             {
@@ -140,5 +142,6 @@ namespace Bilgi.Sis.SftpProxy.Jobs
 
             }
         }
+
     }
 }

@@ -130,7 +130,10 @@ namespace Bilgi.Sis.SftpProxy
         private void StartScheduler()
         {
             if (_scheduler == null)
-                _scheduler = StdSchedulerFactory.GetDefaultScheduler();
+                _scheduler = StdSchedulerFactory.GetDefaultScheduler()
+                    .ConfigureAwait(false)
+                    .GetAwaiter()
+                    .GetResult();
 
             _scheduler.Start();
         }
